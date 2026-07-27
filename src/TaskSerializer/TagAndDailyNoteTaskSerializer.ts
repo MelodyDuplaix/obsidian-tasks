@@ -158,7 +158,20 @@ export class TagAndDailyNoteTaskSerializer extends DefaultTaskSerializer {
     }
 
     public deserialize(line: string): TaskDetails {
-        const details = super.deserialize(line);
+        let extractedPriority: Priority = Priority.None;
+        let cleanLine = line;
+
+        const priorityMatch = line.match(/(?:^|\s)(#priority\/(highest|high|medium|low|lowest))(?:\s|$)/i);
+        if (priorityMatch !== null) {
+            extractedPriority = this.parsePriority(priorityMatch[1]);
+            cleanLine = line.replace(priorityMatch[1], '').replace(/  +/g, ' ').trim();
+        }
+
+        const details = super.deserialize(cleanLine);
+
+        if (extractedPriority !== Priority.None) {
+            details.priority = extractedPriority;
+        }
 
         // Remove any #priority/* tags from the parsed tags list so they aren't duplicated as general tags
         if (details.tags && details.tags.length > 0) {
