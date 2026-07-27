@@ -54,10 +54,13 @@ export function makeDefaultSuggestionBuilder(
     dataviewMode: boolean,
 ): SuggestionBuilder {
     // NEW_TASK_FIELD_EDIT_REQUIRED
-    const validSymbols = [symbols.startDateSymbol, symbols.scheduledDateSymbol, symbols.dueDateSymbol].filter(
+    const rawSymbols = [symbols.startDateSymbol, symbols.scheduledDateSymbol, symbols.dueDateSymbol].filter(
         (s) => s.length > 0,
     );
-    const datePrefixRegex = validSymbols.length > 0 ? validSymbols.join('|') : '🛫|⏳|📅|\\[\\[|\\[';
+    let datePrefixRegex = rawSymbols.join('|');
+    if (!symbols.dueDateSymbol) {
+        datePrefixRegex = datePrefixRegex ? `${datePrefixRegex}|\\[\\[|\\[` : '\\[\\[|\\[';
+    }
     /*
      * Return a list of suggestions, either generic or more fine-grained to the words at the cursor.
      */

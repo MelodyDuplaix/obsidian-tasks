@@ -1,6 +1,6 @@
 {
   "name": "obsidian-tasks-custom-plugin",
-  "version": "8.3.5",
+  "version": "8.3.6",
   "description": "Task management for the Obsidian knowledge base",
   "main": "main.js",
   "engines": {
