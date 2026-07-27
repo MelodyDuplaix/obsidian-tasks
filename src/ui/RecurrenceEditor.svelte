@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { TASK_FORMATS } from '../Config/Settings';
+    import { TASK_FORMATS, getUserSelectedTaskFormat } from '../Config/Settings';
     import type { EditableTask } from './EditableTask';
     import { labelContentWithAccessKey } from './EditTaskHelpers';
 
@@ -11,7 +11,8 @@
 
     $: ({ parsedRecurrence, isRecurrenceValid } = editableTask.parseAndValidateRecurrence());
 
-    const { recurrenceSymbol } = TASK_FORMATS.tasksPluginEmoji.taskSerializer.symbols;
+    const activeSerializer = getUserSelectedTaskFormat().taskSerializer;
+    const recurrenceSymbol = 'symbols' in activeSerializer ? (activeSerializer as any).symbols.recurrenceSymbol : TASK_FORMATS.tasksPluginEmoji.taskSerializer.symbols.recurrenceSymbol;
 </script>
 
 <label for="recurrence">{@html labelContentWithAccessKey('Recurs', accesskey)}</label>

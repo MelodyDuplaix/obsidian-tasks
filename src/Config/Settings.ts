@@ -8,6 +8,7 @@ import { DATAVIEW_SYMBOLS } from '../TaskSerializer/DataviewTaskSerializer';
 import { StatusConfiguration } from '../Statuses/StatusConfiguration';
 import { Status } from '../Statuses/Status';
 import { DefaultTaskSerializer, type TaskSerializer } from '../TaskSerializer';
+import { TagAndDailyNoteTaskSerializer, TAG_AND_DAILY_NOTE_SYMBOLS } from '../TaskSerializer/TagAndDailyNoteTaskSerializer';
 import type { SuggestionBuilder } from '../Suggestor';
 import type { LogOptions } from '../lib/logging';
 import { DataviewTaskSerializer } from '../TaskSerializer/DataviewTaskSerializer';
@@ -59,6 +60,12 @@ export const TASK_FORMATS = {
             ],
         ),
     },
+    /* FORK CUSTOMIZATION: Tag & Daily Note Format */
+    tagAndDailyNote: {
+        getDisplayName: () => 'Tags & Daily Note Links (#priority/... & [[date]])',
+        taskSerializer: new TagAndDailyNoteTaskSerializer(),
+        buildSuggestions: makeDefaultSuggestionBuilder(TAG_AND_DAILY_NOTE_SYMBOLS, DEFAULT_MAX_GENERIC_SUGGESTIONS, false),
+    },
 } as const;
 
 export type TASK_FORMATS = typeof TASK_FORMATS; // For convenience to make some typing easier
@@ -84,6 +91,9 @@ export interface Settings {
     searchResults: {
         taskCountLocation: 'top' | 'bottom';
     };
+
+    /* FORK CUSTOMIZATION */
+    dailyNoteDateFormat: string;
 
     // The custom status states.
     statusSettings: StatusSettings;
@@ -130,6 +140,8 @@ const defaultSettings: Readonly<Settings> = {
     searchResults: {
         taskCountLocation: 'bottom',
     },
+    /* FORK CUSTOMIZATION */
+    dailyNoteDateFormat: 'DD-MM-YYYY ddd',
     statusSettings: new StatusSettings(),
     isShownInEditModal: defaultEditModalShowSettings,
     dismissedNotices: {

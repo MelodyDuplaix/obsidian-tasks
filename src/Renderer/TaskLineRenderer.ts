@@ -1,6 +1,7 @@
 import { type App, Component, MarkdownRenderer } from 'obsidian';
 import { GlobalFilter } from '../Config/GlobalFilter';
-import { TASK_FORMATS, getSettings } from '../Config/Settings';
+import { TASK_FORMATS, getSettings, getUserSelectedTaskFormat } from '../Config/Settings';
+import type { DefaultTaskSerializer } from '../TaskSerializer';
 import type { AllTaskDateFields } from '../DateTime/DateFieldTypes';
 import { splitDateText } from '../DateTime/Postponer';
 import type { QueryLayoutOptions } from '../Layout/QueryLayoutOptions';
@@ -237,10 +238,10 @@ export class TaskLineRenderer {
         isTaskInQueryFile: boolean,
     ): Promise<void> {
         const fieldRenderer = new TaskFieldRenderer();
-        const emojiSerializer = TASK_FORMATS.tasksPluginEmoji.taskSerializer;
+        const serializer = getUserSelectedTaskFormat().taskSerializer as DefaultTaskSerializer;
         // Render and build classes for all the task's visible components
         for (const component of this.taskLayoutOptions.shownComponents) {
-            const componentString = emojiSerializer.componentToString(
+            const componentString = serializer.componentToString(
                 task,
                 this.queryLayoutOptions.shortMode,
                 component,

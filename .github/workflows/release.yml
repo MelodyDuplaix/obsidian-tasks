@@ -1,5 +1,6 @@
 name: Release Obsidian Plugin
 on:
+  workflow_dispatch:
   push:
     # Sequence of patterns matched against refs/tags
     tags:
@@ -60,7 +61,7 @@ jobs:
       with:
         tag_name: ${{ github.ref }}
         release_name: ${{ github.ref }}
-        draft: true
+        draft: false
         prerelease: false
 
     # Upload the packaged release file

@@ -63,3 +63,4 @@ export interface TaskSerializer {
 }
 
 export { DefaultTaskSerializer } from './DefaultTaskSerializer';
+export { TagAndDailyNoteTaskSerializer, TAG_AND_DAILY_NOTE_SYMBOLS } from './TagAndDailyNoteTaskSerializer';

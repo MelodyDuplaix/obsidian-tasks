@@ -50,10 +50,11 @@ export interface DefaultTaskSerializerSymbols {
 /**
  * Represents the mutable state during task line parsing.
  */
-interface ParsingState {
+export interface ParsingState {
     line: string;
     matched: boolean;
 }
+
 
 // The allowed characters in a single task id:
 export const taskIdRegex = /[a-zA-Z0-9-_]+/;
@@ -271,7 +272,7 @@ export class DefaultTaskSerializer implements TaskSerializer {
      * Attempt to match and extract a date field from the parsing state.
      * Updates state.line and state.matched if a match is found.
      */
-    private extractDateField(state: ParsingState, regex: RegExp, setter: (date: Moment) => void): void {
+    protected extractDateField(state: ParsingState, regex: RegExp, setter: (date: Moment) => void): void {
         this.extractField(state, regex, (match) => {
             setter(window.moment(match[1], TaskRegularExpressions.dateFormat));
         });
@@ -281,7 +282,7 @@ export class DefaultTaskSerializer implements TaskSerializer {
      * Attempt to match and extract a generic field from the parsing state.
      * Updates state.line and state.matched if a match is found.
      */
-    private extractField(state: ParsingState, regex: RegExp, setter: (match: RegExpMatchArray) => void): void {
+    protected extractField(state: ParsingState, regex: RegExp, setter: (match: RegExpMatchArray) => void): void {
         const match: RegExpMatchArray | null = state.line.match(regex);
         if (match !== null) {
             setter(match);

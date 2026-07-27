@@ -109,6 +109,25 @@ export class SettingsTab extends PluginSettingTab {
                 });
             });
 
+        /* FORK CUSTOMIZATION: Daily Note Link Date Format Setting */
+        new Setting(containerEl)
+            .setName('Daily Note Link Date Format')
+            .setDesc('Format used for due date daily note links when using Tag & Daily Note format (e.g. DD-MM-YYYY ddd gives [[27-07-2026 lu]])')
+            .addText((text) => {
+                text.setPlaceholder('DD-MM-YYYY ddd')
+                    .setValue(getSettings().dailyNoteDateFormat || 'DD-MM-YYYY ddd')
+                    .onChange(
+                        debounce(
+                            async (value) => {
+                                updateSettings({ dailyNoteDateFormat: value.trim() || 'DD-MM-YYYY ddd' });
+                                await this.plugin.saveSettings();
+                            },
+                            500,
+                            true,
+                        ),
+                    );
+            });
+
         // ---------------------------------------------------------------------------
         new Setting(containerEl).setName(i18n.t('settings.globalFilter.heading')).setHeading();
         // ---------------------------------------------------------------------------

@@ -1,12 +1,14 @@
 <script lang="ts">
-    import { TASK_FORMATS } from '../Config/Settings';
+    import { getUserSelectedTaskFormat } from '../Config/Settings';
 
     export let priority: string;
     export let withAccessKeys: boolean;
 
     $: accesskey = (key: string) => (withAccessKeys ? key : null);
 
-    const { prioritySymbols } = TASK_FORMATS.tasksPluginEmoji.taskSerializer.symbols;
+    const serializer = getUserSelectedTaskFormat().taskSerializer;
+    const prioritySymbols = 'symbols' in serializer ? (serializer as any).symbols.prioritySymbols : { Highest: '', High: '', Medium: '', Low: '', Lowest: '', None: '' };
+
 
     const priorityOptions: {
         value: typeof priority;

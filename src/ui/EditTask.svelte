@@ -12,6 +12,7 @@
     import { labelContentWithAccessKey } from './EditTaskHelpers';
     import PriorityEditor from './PriorityEditor.svelte';
     import RecurrenceEditor from './RecurrenceEditor.svelte';
+    import { getUserSelectedTaskFormat } from '../Config/Settings';
     import StatusEditor from './StatusEditor.svelte';
 
     // These exported variables are passed in as props by TaskModal.onOpen():
@@ -20,6 +21,8 @@
     export let statusOptions: Status[];
     export let allTasks: Task[];
 
+    const activeSerializer = getUserSelectedTaskFormat().taskSerializer;
+    const symbols = 'symbols' in activeSerializer ? (activeSerializer as any).symbols : TASK_FORMATS.tasksPluginEmoji.taskSerializer.symbols;
     const {
         // NEW_TASK_FIELD_EDIT_REQUIRED
         startDateSymbol,
@@ -28,7 +31,7 @@
         cancelledDateSymbol,
         createdDateSymbol,
         doneDateSymbol,
-    } = TASK_FORMATS.tasksPluginEmoji.taskSerializer.symbols;
+    } = symbols;
 
     let descriptionInput: HTMLTextAreaElement;
 
