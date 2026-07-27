@@ -1,6 +1,7 @@
 import type { Editor, EditorPosition } from 'obsidian';
 
-import type { Settings } from '../Config/Settings';
+import { type Settings, getSettings, getUserSelectedTaskFormat } from '../Config/Settings';
+import { TagAndDailyNoteTaskSerializer } from '../TaskSerializer/TagAndDailyNoteTaskSerializer';
 import { DateParser } from '../DateTime/DateParser';
 import { doAutocomplete } from '../DateTime/DateAbbreviations';
 import { Occurrence } from '../Task/Occurrence';
@@ -53,7 +54,10 @@ export function makeDefaultSuggestionBuilder(
     dataviewMode: boolean,
 ): SuggestionBuilder {
     // NEW_TASK_FIELD_EDIT_REQUIRED
-    const datePrefixRegex = [symbols.startDateSymbol, symbols.scheduledDateSymbol, symbols.dueDateSymbol].join('|');
+    const validSymbols = [symbols.startDateSymbol, symbols.scheduledDateSymbol, symbols.dueDateSymbol].filter(
+        (s) => s.length > 0,
+    );
+    const datePrefixRegex = validSymbols.length > 0 ? validSymbols.join('|') : '🛫|⏳|📅|\\[\\[';
     /*
      * Return a list of suggestions, either generic or more fine-grained to the words at the cursor.
      */
@@ -266,9 +270,17 @@ function defaultExtractor(symbol: string, suggestionText: any) {
 
 function dateExtractor(symbol: string, date: string) {
     const parsedDate = DateParser.parseDate(date, true);
+    const activeSerializer = getUserSelectedTaskFormat().taskSerializer;
+    if (activeSerializer instanceof TagAndDailyNoteTaskSerializer) {
+        const format = getSettings().dailyNoteDateFormat || 'DD-MM-YYYY ddd';
+        const formattedDate = `[[${parsedDate.format(format)}]]`;
+        const displayText = `${date} (${formattedDate})`;
+        const appendText = symbol && symbol !== '[[' ? `${symbol} ${formattedDate}` : formattedDate;
+        return { displayText, appendText };
+    }
     const formattedDate = `${parsedDate.format(TaskRegularExpressions.dateFormat)}`;
     const displayText = `${date} (${formattedDate})`;
-    const appendText = `${symbol} ${formattedDate}`;
+    const appendText = `${symbol} ${formattedDate}`.trim();
     return { displayText, appendText };
 }
 
@@ -317,8 +329,19 @@ function addDatesSuggestions(
         if (possibleDate?.isValid()) {
             // Seems like the text that the user typed can be parsed as a valid date.
             // Present its completed form as a 1st suggestion
-            const absoluteDate = possibleDate.format(TaskRegularExpressions.dateFormat);
-            constructSuggestions(parameters, dateMatch, [absoluteDate], defaultExtractor, results);
+            const activeSerializer = getUserSelectedTaskFormat().taskSerializer;
+            if (activeSerializer instanceof TagAndDailyNoteTaskSerializer) {
+                const format = getSettings().dailyNoteDateFormat || 'DD-MM-YYYY ddd';
+                const formattedDate = `[[${possibleDate.format(format)}]]`;
+                const extractor = (symbol: string, match: string) => ({
+                    displayText: match,
+                    appendText: symbol && symbol !== '[[' ? `${symbol} ${match}` : match,
+                });
+                constructSuggestions(parameters, dateMatch, [formattedDate], extractor, results);
+            } else {
+                const absoluteDate = possibleDate.format(TaskRegularExpressions.dateFormat);
+                constructSuggestions(parameters, dateMatch, [absoluteDate], defaultExtractor, results);
+            }
         }
 
         const genericMatches = filterGenericSuggestions(genericSuggestions, dateString, maxGenericSuggestions, true);
