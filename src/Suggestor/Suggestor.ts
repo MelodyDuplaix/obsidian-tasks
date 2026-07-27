@@ -158,7 +158,8 @@ function addTaskPropertySuggestions(
 
     const activeSerializer = getUserSelectedTaskFormat().taskSerializer;
     if (activeSerializer instanceof TagAndDailyNoteTaskSerializer) {
-        if (!line.includes('[')) {
+        const hasDueDate = line.includes('[[') || line.includes('📅');
+        if (!hasDueDate) {
             genericSuggestions.push({
                 displayText: 'due date [',
                 textToMatch: 'due date',
@@ -656,8 +657,21 @@ function constructSuggestions(
 export function matchIfCursorInRegex(r: RegExp, parameters: SuggestorParameters): RegExpMatchArray | void {
     const matches = parameters.line.matchAll(r);
     const cursorPos = parameters.cursorPos;
+    const taskComponents = Task.extractTaskComponents(parameters.line);
+    const checkboxEnd = taskComponents
+        ? (taskComponents.indentation + taskComponents.listMarker + ' [' + taskComponents.status.symbol + '] ').length
+        : 0;
+
     for (const match of matches) {
-        if (match?.index && match.index < cursorPos && cursorPos <= match.index + match[0].length) return match;
+        if (match.index !== undefined) {
+            // Ignore any match that falls inside the checkbox prefix (e.g. the '[' in "- [ ] ")
+            if (match.index < checkboxEnd) {
+                continue;
+            }
+            if (match.index < cursorPos && cursorPos <= match.index + match[0].length) {
+                return match;
+            }
+        }
     }
 }
 
