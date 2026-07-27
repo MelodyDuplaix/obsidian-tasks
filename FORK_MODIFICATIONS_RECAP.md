@@ -40,26 +40,31 @@ Pour garantir que les futurs `git merge` avec le dépôt upstream `obsidian-task
 ## 3. Détail des Fichiers Créés et Modifiés
 
 ### A. Nouveau Fichier : `src/TaskSerializer/TagAndDailyNoteTaskSerializer.ts`
+
 - **Rôle** : Implémente la sérialisation et la désérialisation spécifique pour les priorités en tags et les due dates en liens Daily Notes.
 - **Logique de sérialisation (`serialize` / `componentToString`)** :
   - Convertit la priorité en `#priority/highest`, `#priority/high`, `#priority/medium`, `#priority/low`, ou `#priority/lowest`.
-  - Convertit la date `dueDate` en ` [[<date_formatee>]]` en utilisant le format configuré dans les réglages (`getSettings().dailyNoteDateFormat`).
+  - Convertit la date `dueDate` en `[[<date_formatee>]]` en utilisant le format configuré dans les réglages (`getSettings().dailyNoteDateFormat`).
 - **Logique de désérialisation (`deserialize`)** :
   - Extrait les liens de type `[[...]]` en fin de tâche et analyse la date à l'intérieur à l'aide de `moment` en essayant le format configuré puis des formats de secours (`DD-MM-YYYY ddd`, `YYYY-MM-DD`, etc.).
   - Extrait les tags `#priority/*` et affecte le niveau de priorité correspondant.
   - Nettoie le tableau `tags` du résultat pour éviter que `#priority/*` ne réapparaisse comme un tag classique de description.
 
 ### B. Index des Serializers : `src/TaskSerializer/index.ts`
+
 - Exporte `TagAndDailyNoteTaskSerializer` et `TAG_AND_DAILY_NOTE_SYMBOLS` pour les rendre accessibles dans tout le projet.
 
 ### C. Ajustement dans `src/TaskSerializer/DefaultTaskSerializer.ts`
+
 - Passage des méthodes `extractDateField` et `extractField` de `private` à `protected`.
 - Exportation de l'interface `ParsingState`.
 - *Raison* : Permet à `TagAndDailyNoteTaskSerializer` d'hériter directement des fonctions de découpage par expressions régulières sans dupliquer le code de parsing des tâches.
 
 ### D. Configuration : `src/Config/Settings.ts`
+
 - Ajout du paramètre `dailyNoteDateFormat` dans l'interface `Settings` (valeur par défaut `'DD-MM-YYYY ddd'`).
 - Enregistrement du nouveau format `tagAndDailyNote` dans `TASK_FORMATS` :
+
   ```ts
   tagAndDailyNote: {
       getDisplayName: () => 'Tags & Daily Note Links (#priority/... & [[date]])',
@@ -69,14 +74,17 @@ Pour garantir que les futurs `git merge` avec le dépôt upstream `obsidian-task
   ```
 
 ### E. Interface Utilisateur des Réglages : `src/Config/SettingsTab.ts`
+
 - Ajout d'un contrôle de saisie texte **Daily Note Link Date Format** sous le choix des formats de tâches.
 - Permet à l'utilisateur de modifier le format de date (ex. `DD-MM-YYYY ddd`, `YYYY-MM-DD`, `DD/MM/YYYY`) directement depuis l'interface du plugin.
 
 ### F. Rendu & UI : `src/Renderer/TaskLineRenderer.ts` & Composants Svelte
+
 - **`TaskLineRenderer.ts`** : Remplacement du serializer codé en dur `TASK_FORMATS.tasksPluginEmoji` par `getUserSelectedTaskFormat().taskSerializer`. Ainsi, le rendu HTML dans Obsidian s'adapte au format actif.
 - **`PriorityEditor.svelte`**, **`EditTask.svelte`**, **`RecurrenceEditor.svelte`** : Mise à jour de la résolution des symboles pour utiliser le serializer sélectionné au lieu de forcer l'émoji par défaut.
 
 ### G. Tests Unitaires Automated : `tests/TaskSerializer/TagAndDailyNoteTaskSerializer.test.ts`
+
 - Validation complète des cas de désérialisation et de sérialisation pour les priorités par tag et les liens Daily Notes.
 
 ---
@@ -86,12 +94,14 @@ Pour garantir que les futurs `git merge` avec le dépôt upstream `obsidian-task
 Lorsque le projet parent Obsidian Tasks publie de nouvelles versions et que vous souhaitez mettre à jour votre fork :
 
 1. **Ajouter le dépôt upstream si ce n'est pas déjà fait** :
+
    ```bash
    git remote add upstream https://github.com/obsidian-tasks-group/obsidian-tasks.git
    git fetch upstream
    ```
 
 2. **Effectuer la fusion** :
+
    ```bash
    git checkout main (ou le nom de votre branche principale)
    git merge upstream/main
