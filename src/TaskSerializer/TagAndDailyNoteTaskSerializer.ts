@@ -50,23 +50,24 @@ export const TAG_AND_DAILY_NOTE_SYMBOLS: DefaultTaskSerializerSymbols = {
 
 export function parseDailyNoteDate(dateStr: string): Moment | null {
     const trimmed = dateStr.trim();
+    if (!trimmed) return null;
 
-    // 1. Extract numeric date pattern (e.g., "27-07-2026" or "2026-07-27")
-    const dateMatch = trimmed.match(/(\d{4}[-/.]\d{2}[-/.]\d{2}|\d{2}[-/.]\d{2}[-/.]\d{4})/);
-    if (dateMatch) {
-        const rawDate = dateMatch[1];
-        const numFormats = ['DD-MM-YYYY', 'YYYY-MM-DD', 'DD/MM/YYYY', 'YYYY/MM/DD', 'DD.MM.YYYY', 'YYYY.MM.DD'];
-        for (const fmt of numFormats) {
-            const m = window.moment(rawDate, fmt, true);
-            if (m.isValid()) {
-                return m;
-            }
-        }
-    }
-
-    // 2. Try configured format and fallbacks with locales
     const userFormat = getSettings().dailyNoteDateFormat || 'DD-MM-YYYY ddd';
-    const formatsToTry = [userFormat, 'DD-MM-YYYY ddd', 'YYYY-MM-DD ddd', 'DD-MM-YYYY', 'YYYY-MM-DD'];
+    const formatsToTry = [
+        userFormat,
+        'DD-MM-YYYY dd',
+        'DD-MM-YYYY ddd',
+        'DD-MM-YYYY dddd',
+        'YYYY-MM-DD dd',
+        'YYYY-MM-DD ddd',
+        'YYYY-MM-DD dddd',
+        'DD-MM-YYYY',
+        'YYYY-MM-DD',
+        'DD/MM/YYYY',
+        'YYYY/MM/DD',
+    ];
+
+    // 1. Try strict parsing with fr and en locales
     for (const loc of ['fr', 'en']) {
         for (const fmt of formatsToTry) {
             const m = window.moment(trimmed, fmt, loc, true);
@@ -74,9 +75,25 @@ export function parseDailyNoteDate(dateStr: string): Moment | null {
         }
     }
 
-    // 3. Fallback non-strict moment parse
-    const m = window.moment(trimmed);
-    return m.isValid() ? m : null;
+    // 2. Try non-strict parsing with formatsToTry
+    for (const fmt of formatsToTry) {
+        const m = window.moment(trimmed, fmt, false);
+        if (m.isValid()) return m;
+    }
+
+    // 3. Try extracting numeric date string (e.g. "27-07-2026" from "27-07-2026 lu")
+    const dateMatch = trimmed.match(/(\d{4}[-/.]\d{2}[-/.]\d{2}|\d{2}[-/.]\d{2}[-/.]\d{4})/);
+    if (dateMatch) {
+        const rawDate = dateMatch[1];
+        for (const fmt of ['DD-MM-YYYY', 'YYYY-MM-DD', 'DD/MM/YYYY', 'YYYY/MM/DD', 'DD.MM.YYYY', 'YYYY.MM.DD']) {
+            const m = window.moment(rawDate, fmt, true);
+            if (m.isValid()) return m;
+        }
+    }
+
+    // 4. Fallback moment parse
+    const fallback = window.moment(trimmed);
+    return fallback.isValid() ? fallback : null;
 }
 
 export class TagAndDailyNoteTaskSerializer extends DefaultTaskSerializer {
