@@ -57,7 +57,7 @@ export function makeDefaultSuggestionBuilder(
     const validSymbols = [symbols.startDateSymbol, symbols.scheduledDateSymbol, symbols.dueDateSymbol].filter(
         (s) => s.length > 0,
     );
-    const datePrefixRegex = validSymbols.length > 0 ? validSymbols.join('|') : '🛫|⏳|📅|\\[\\[';
+    const datePrefixRegex = validSymbols.length > 0 ? validSymbols.join('|') : '🛫|⏳|📅|\\[\\[|\\[';
     /*
      * Return a list of suggestions, either generic or more fine-grained to the words at the cursor.
      */
@@ -153,9 +153,22 @@ function addTaskPropertySuggestions(
     // NEW_TASK_FIELD_EDIT_REQUIRED
     const line = parameters.line;
 
-    addField(genericSuggestions, line, symbols.dueDateSymbol, 'due date');
-    addField(genericSuggestions, line, symbols.startDateSymbol, 'start date');
-    addField(genericSuggestions, line, symbols.scheduledDateSymbol, 'scheduled date');
+    const activeSerializer = getUserSelectedTaskFormat().taskSerializer;
+    if (activeSerializer instanceof TagAndDailyNoteTaskSerializer) {
+        if (!line.includes('[')) {
+            genericSuggestions.push({
+                displayText: 'due date [',
+                textToMatch: 'due date',
+                appendText: '[',
+            });
+        }
+        addField(genericSuggestions, line, symbols.startDateSymbol, 'start date');
+        addField(genericSuggestions, line, symbols.scheduledDateSymbol, 'scheduled date');
+    } else {
+        addField(genericSuggestions, line, symbols.dueDateSymbol, 'due date');
+        addField(genericSuggestions, line, symbols.startDateSymbol, 'start date');
+        addField(genericSuggestions, line, symbols.scheduledDateSymbol, 'scheduled date');
+    }
 
     addPrioritySuggestions(genericSuggestions, symbols, parameters);
     addField(genericSuggestions, line, symbols.recurrenceSymbol, 'recurring (repeat)');
@@ -275,7 +288,7 @@ function dateExtractor(symbol: string, date: string) {
         const format = getSettings().dailyNoteDateFormat || 'DD-MM-YYYY ddd';
         const formattedDate = `[[${parsedDate.format(format)}]]`;
         const displayText = `${date} (${formattedDate})`;
-        const appendText = symbol && symbol !== '[[' ? `${symbol} ${formattedDate}` : formattedDate;
+        const appendText = symbol && symbol !== '[[' && symbol !== '[' ? `${symbol} ${formattedDate}` : formattedDate;
         return { displayText, appendText };
     }
     const formattedDate = `${parsedDate.format(TaskRegularExpressions.dateFormat)}`;
@@ -335,7 +348,7 @@ function addDatesSuggestions(
                 const formattedDate = `[[${possibleDate.format(format)}]]`;
                 const extractor = (symbol: string, match: string) => ({
                     displayText: match,
-                    appendText: symbol && symbol !== '[[' ? `${symbol} ${match}` : match,
+                    appendText: symbol && symbol !== '[[' && symbol !== '[' ? `${symbol} ${match}` : match,
                 });
                 constructSuggestions(parameters, dateMatch, [formattedDate], extractor, results);
             } else {
