@@ -17,6 +17,8 @@
     "moduleResolution": "node",
     "importHelpers": true,
     "ignoreDeprecations": "5.0",
+    "preserveValueImports": false,
+    "importsNotUsedAsValues": "remove",
     "outDir": "generated",
     "paths": {
       "src": [
