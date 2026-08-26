@@ -8,7 +8,7 @@ export class FunctionOrError extends QueryComponentOrError<Function> {}
 /**
  * The name and value of a parameter, as a Tuple, for passing in to {@link parseExpression} and related functions.
  */
-export type ExpressionParameter = [name: string, value: any];
+export type ExpressionParameter = [name: string, value: unknown];
 
 /**
  * Parse a JavaScript expression, and return either a Function or an error message in a string.
@@ -45,7 +45,7 @@ export function parseExpression(paramsArgs: ExpressionParameter[], arg: string):
  * @see parseExpression
  * @see evaluateExpressionOrCatch
  */
-export function evaluateExpression(expression: Function, paramsArgs: ExpressionParameter[]) {
+export function evaluateExpression(expression: Function, paramsArgs: ExpressionParameter[]): unknown {
     if (!EnableJsInTasksQueries.getInstance().get()) {
         throw new JsInTasksQueriesDisabledError();
     }
@@ -63,7 +63,11 @@ export function evaluateExpression(expression: Function, paramsArgs: ExpressionP
  * @see parseExpression
  * @see evaluateExpression
  */
-export function evaluateExpressionOrCatch(expression: Function, paramsArgs: ExpressionParameter[], arg: string) {
+export function evaluateExpressionOrCatch(
+    expression: Function,
+    paramsArgs: ExpressionParameter[],
+    arg: string,
+): unknown {
     try {
         return evaluateExpression(expression, paramsArgs);
     } catch (e) {

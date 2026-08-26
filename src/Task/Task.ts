@@ -35,6 +35,8 @@ interface TaskComponents {
  * the extensions provided by this plugin. This is used to parse and
  * generate the markdown task for all updates and replacements.
  *
+ * See also {@link ListItem}.
+ *
  * @class Task
  */
 export class Task extends ListItem {
@@ -323,7 +325,12 @@ export class Task extends ListItem {
      * @return {*}  {string}
      */
     public toFileLineString(): string {
-        return `${this.indentation}${this.listMarker} [${this.status.symbol}] ${this.toString()}`;
+        // Preserve Markdown hard-break spaces from the original line when a task
+        // edit is being written back. A single trailing space is formatting noise,
+        // but two or more trailing spaces are meaningful.
+        return `${this.indentation}${this.listMarker} [${this.status.symbol}] ${this.toString()}${
+            this.markdownHardBreak
+        }`;
     }
 
     /**

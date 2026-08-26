@@ -384,7 +384,10 @@ export class DefaultTaskSerializer implements TaskSerializer {
         // components but now we want them back.
         // The goal is for a task of them form 'Do something #tag1 (due) tomorrow #tag2 (start) today'
         // to actually have the description 'Do something #tag1 #tag2'
-        if (trailingTags.length > 0) state.line += ' ' + trailingTags;
+        if (trailingTags.length > 0) {
+            const separator = state.line.length > 0 ? ' ' : '';
+            state.line += separator + trailingTags;
+        }
 
         // NEW_TASK_FIELD_EDIT_REQUIRED
         return {

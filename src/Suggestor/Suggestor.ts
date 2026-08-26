@@ -26,17 +26,8 @@ import type { SuggestInfo, SuggestionBuilder } from '.';
  */
 export const DEFAULT_MAX_GENERIC_SUGGESTIONS = 5;
 
-declare global {
-    // eslint-disable-next-line no-var -- required to declare a globalThis property in TypeScript
-    var SHOW_DEPENDENCY_SUGGESTIONS: boolean;
-}
-
-// Set default value for production to off, temporarily. It will be turned on in tests.
-export const showDependencySuggestionsDefault = true;
-globalThis.SHOW_DEPENDENCY_SUGGESTIONS = showDependencySuggestionsDefault;
-
 function includeDependencySuggestions(canSaveEdits: boolean) {
-    return globalThis.SHOW_DEPENDENCY_SUGGESTIONS && canSaveEdits;
+    return canSaveEdits;
 }
 
 export interface SuggestorParameters {
@@ -279,7 +270,7 @@ function filterGeneralSuggestionsForWordAtCursor(genericSuggestions: SuggestInfo
     return matchingSuggestions;
 }
 
-function defaultExtractor(symbol: string, suggestionText: any) {
+function defaultExtractor(symbol: string, suggestionText: string) {
     const displayText = `${suggestionText}`;
     const appendText = `${symbol} ${suggestionText}`;
     return { displayText, appendText };

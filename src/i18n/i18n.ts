@@ -6,6 +6,7 @@ import be from './locales/be.json';
 import de from './locales/de.json';
 import en from './locales/en.json';
 import es from './locales/es.json';
+import fr from './locales/fr.json';
 import ko from './locales/ko.json';
 import pt_br from './locales/pt_br.json';
 import ru from './locales/ru.json';
@@ -38,6 +39,7 @@ export const initializeI18n = async () => {
                 de: { translation: de }, // German
                 en: { translation: en }, // English
                 es: { translation: es }, // Spanish
+                fr: { translation: fr }, // French
                 ko: { translation: ko }, // Korean
                 'pt-BR': { translation: pt_br }, // Portuguese (Brazil)
                 ru: { translation: ru }, // Russian
@@ -56,12 +58,9 @@ export const initializeI18n = async () => {
 };
 
 export const i18n = new Proxy(i18next, {
-    get(target, prop) {
+    get(target, prop): unknown {
         if (!isInitialized && prop === 't') {
-            /* If you get the following error in tests, add this code block before the first
-               test in the file.
-               (Or add the 'await' line to the existing first beforeAll).
-
+            /* This should never be reached in tests, as the following is called in jest.setup.ts:
                     beforeAll(async () => {
                         await initializeI18n();
                     });
