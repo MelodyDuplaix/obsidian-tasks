@@ -1,5 +1,4 @@
 {
-  "extends": "@tsconfig/svelte/tsconfig.json",
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
     "baseUrl": "./src",
@@ -16,9 +15,9 @@
     "noImplicitAny": true,
     "moduleResolution": "node",
     "importHelpers": true,
-    "ignoreDeprecations": "5.0",
-    "preserveValueImports": false,
-    "importsNotUsedAsValues": "remove",
+    "isolatedModules": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
     "outDir": "generated",
     "paths": {
       "src": [
