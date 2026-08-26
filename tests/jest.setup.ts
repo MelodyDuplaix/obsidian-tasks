@@ -156,6 +156,24 @@ HTMLElement.prototype.createSpan = function (
 EnableJsInTasksQueries.initialise(new InMemoryLocalStorageProvider());
 EnableJsInTasksQueries.getInstance().set(true);
 
+const OriginalNumberFormat = Intl.NumberFormat;
+const originalFormatGetter = Object.getOwnPropertyDescriptor(OriginalNumberFormat.prototype, 'format')?.get;
+if (originalFormatGetter) {
+    Object.defineProperty(OriginalNumberFormat.prototype, 'format', {
+        get() {
+            const bound = originalFormatGetter.call(this);
+            const opts = this.resolvedOptions();
+            if (opts.locale !== 'en-US') {
+                const enFormat = new OriginalNumberFormat('en-US', opts);
+                return (n: number | bigint) => enFormat.format(n);
+            }
+            return bound;
+        },
+        configurable: true,
+        enumerable: false,
+    });
+}
+
 beforeAll(async () => {
     await initializeI18n();
 });

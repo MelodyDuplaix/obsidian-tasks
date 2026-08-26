@@ -19,8 +19,9 @@ describe('MockDataLoader', () => {
         const path = MockDataLoader.path('code_block_in_task');
         const expectedSubPath = 'tests/Obsidian/__test_data__/code_block_in_task.json';
 
-        expect(path).toContain(expectedSubPath);
-        expect(path.endsWith(expectedSubPath)).toBe(true);
+        const pathNormalized = path.replace(/\\/g, '/');
+        expect(pathNormalized).toContain(expectedSubPath);
+        expect(pathNormalized.endsWith(expectedSubPath)).toBe(true);
     });
 
     it('should provide path to the Markdown file in the test vault', () => {
