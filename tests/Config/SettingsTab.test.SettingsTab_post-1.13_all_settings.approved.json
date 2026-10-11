@@ -7,6 +7,11 @@
         "render": "[Function]"
       },
       {
+        "name": "Daily Note Link Date Format",
+        "desc": "<p>Format used for due date daily note links when using Tag &amp; Daily Note format (e.g. DD-MM-YYYY ddd gives [[27-07-2026 lu]]).</p>",
+        "render": "[Function]"
+      },
+      {
         "name": "Global task filter",
         "desc": "<p><b>Recommended: Leave empty if you want all checklist items in your vault to be tasks managed by this plugin.</b></p><p>Use a global filter if you want Tasks to only act on a subset of your \"<code>- [ ]</code>\" checklist items, so that a checklist item must include the specified string in its description in order to be considered a task.</p><p>For example, if you set the global filter to <code>#task</code>, the Tasks plugin will only handle checklist items tagged with <code>#task</code>. Other checklist items will remain normal checklist items and not appear in queries or get a done date set.</p>",
         "render": "[Function]"

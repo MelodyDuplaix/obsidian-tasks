@@ -7,6 +7,13 @@
     ]
   },
   {
+    "name": "Daily Note Link Date Format",
+    "desc": "Format used for due date daily note links when using Tag & Daily Note format (e.g. DD-MM-YYYY ddd gives [[27-07-2026 lu]])",
+    "controls": [
+      "text"
+    ]
+  },
+  {
     "name": "Global task filter",
     "heading": true,
     "controls": []
