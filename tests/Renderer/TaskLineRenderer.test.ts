@@ -1,6 +1,3 @@
-/**
- * @jest-environment jsdom
- */
 import moment from 'moment';
 
 import { DebugSettings } from '../../src/Config/DebugSettings';
@@ -20,7 +17,6 @@ import { fromLine } from '../TestingTools/TestHelpers';
 import { mockApp } from '../__mocks__/obsidian';
 import { mockHTMLRenderer, mockTextRenderer } from './RenderingTestHelpers';
 
-jest.mock('obsidian');
 window.moment = moment;
 
 /**
@@ -505,12 +501,12 @@ describe('task line rendering - classes and data attributes', () => {
 
 describe('Visualise HTML', () => {
     beforeAll(() => {
-        jest.useFakeTimers();
-        jest.setSystemTime(new Date('2023-07-05'));
+        vi.useFakeTimers();
+        vi.setSystemTime(new Date('2023-07-05'));
     });
 
     afterAll(() => {
-        jest.useRealTimers();
+        vi.useRealTimers();
     });
 
     async function renderAndVerifyHTML(
@@ -528,7 +524,7 @@ describe('Visualise HTML', () => {
         const taskAsMarkdown = `<!--
 ${task.toFileLineString()}
 -->\n\n`;
-        const prettyHTML = prettifyHTML(listItem.outerHTML);
+        const prettyHTML = await prettifyHTML(listItem.outerHTML);
 
         verifyWithFileExtension(taskAsMarkdown + prettyHTML, 'html');
     }

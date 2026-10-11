@@ -1,6 +1,3 @@
-/**
- * @jest-environment jsdom
- */
 import moment from 'moment';
 import { TaskLayoutComponent } from '../../src/Layout/TaskLayoutOptions';
 import { TaskFieldHTMLData, TaskFieldRenderer } from '../../src/Renderer/TaskFieldRenderer';
@@ -12,12 +9,12 @@ const fieldRenderer = new TaskFieldRenderer();
 
 describe('Field Layouts Container tests', () => {
     beforeEach(() => {
-        jest.useFakeTimers();
-        jest.setSystemTime(new Date('2023-11-19'));
+        vi.useFakeTimers();
+        vi.setSystemTime(new Date('2023-11-19'));
     });
 
     afterEach(() => {
-        jest.useRealTimers();
+        vi.useRealTimers();
     });
 
     it('should add a data attribute for an existing component (date)', () => {

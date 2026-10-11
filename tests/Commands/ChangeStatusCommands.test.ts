@@ -1,7 +1,3 @@
-/**
- * @jest-environment jsdom
- */
-
 import moment from 'moment';
 import { Notice } from 'obsidian';
 import {
@@ -14,19 +10,19 @@ import { StatusRegistry } from '../../src/Statuses/StatusRegistry';
 import { StatusConfiguration, StatusType } from '../../src/Statuses/StatusConfiguration';
 import { resetSettings, updateSettings } from '../../src/Config/Settings';
 
-jest.mock('obsidian', () => ({
-    Notice: jest.fn(),
+vi.mock('obsidian', () => ({
+    Notice: vi.fn(),
 }));
 
 window.moment = moment;
 
 beforeEach(() => {
-    jest.useFakeTimers();
-    jest.setSystemTime(new Date('2026-02-27'));
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-02-27'));
 });
 
 afterEach(() => {
-    jest.useRealTimers();
+    vi.useRealTimers();
     resetSettings();
 });
 
@@ -77,7 +73,7 @@ describe('setStatusOnLine', () => {
 });
 
 describe('createSetStatusLineTransformer', () => {
-    const MockedNotice = jest.mocked(Notice);
+    const MockedNotice = vi.mocked(Notice);
 
     beforeEach(() => {
         MockedNotice.mockClear();

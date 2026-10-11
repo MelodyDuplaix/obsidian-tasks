@@ -1,6 +1,3 @@
-/**
- * @jest-environment jsdom
- */
 import moment from 'moment';
 import { resetSettings, updateSettings } from '../../src/Config/Settings';
 import { taskFromLine } from '../../src/Commands/CreateOrEditTaskParser';
@@ -101,12 +98,12 @@ describe('CreateOrEditTaskParser - task recognition', () => {
 
 describe('CreateOrEditTaskParser - created date', () => {
     beforeEach(() => {
-        jest.useFakeTimers();
-        jest.setSystemTime(new Date('2023-09-17'));
+        vi.useFakeTimers();
+        vi.setSystemTime(new Date('2023-09-17'));
     });
 
     afterEach(() => {
-        jest.useRealTimers();
+        vi.useRealTimers();
         resetSettings();
         GlobalFilter.getInstance().reset();
     });

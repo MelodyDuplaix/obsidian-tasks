@@ -1,12 +1,12 @@
 import type { App, Editor, MarkdownFileInfo, MarkdownView, TFile, View } from 'obsidian';
 import type TasksPlugin from '../main';
 import { StatusRegistry } from '../Statuses/StatusRegistry';
+import { QuickSearchTasksModal } from '../ui/QuickSearchTasksModal';
 import { createOrEdit } from './CreateOrEdit';
 
 import { toggleDone } from './ToggleDone';
 import { ensureQueryFileDefaultsInFrontmatter } from './AddQueryFileDefaultsProperties';
 import { createSetStatusCommands } from './ChangeStatusCommands';
-import { QuickSearchTasksModal } from './QuickSearchTasks';
 
 export const ToggleTaskDoneCommandName = 'Toggle task done';
 
@@ -48,7 +48,12 @@ export class Commands {
             id: 'quick-search',
             name: 'Quick search',
             icon: 'search',
-            callback: () => new QuickSearchTasksModal(this.app, () => this.plugin.getTasks()).open(),
+            callback: () =>
+                new QuickSearchTasksModal(
+                    this.app,
+                    () => this.plugin.getTasks(),
+                    async () => await this.plugin.saveSettings(),
+                ).open(),
         });
 
         plugin.addCommand({

@@ -1,7 +1,3 @@
-/**
- * @jest-environment jsdom
- */
-
 import moment from 'moment';
 import { getSettings, resetSettings, updateSettings } from '../../../src/Config/Settings';
 import { Query } from '../../../src/Query/Query';
@@ -14,8 +10,8 @@ import { createTestTasksFile } from '../../TestingTools/TasksFileHelpers';
 window.moment = moment;
 
 beforeEach(() => {
-    jest.useFakeTimers();
-    jest.setSystemTime(new Date('2025-04-28'));
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2025-04-28'));
 });
 
 afterEach(() => {

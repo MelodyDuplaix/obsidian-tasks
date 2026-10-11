@@ -1,6 +1,3 @@
-/**
- * @jest-environment jsdom
- */
 import moment from 'moment';
 import type { Settings } from '../../src/Config/Settings';
 import { DefaultTaskSerializer } from '../../src/TaskSerializer';
@@ -15,7 +12,6 @@ import { OnCompletion } from '../../src/Task/OnCompletion';
 import { Priority } from '../../src/Task/Priority';
 import { escapeInvisibleCharacters } from '../../src/lib/StringHelpers';
 
-jest.mock('obsidian');
 window.moment = moment;
 
 type DefaultTaskSerializeSymbolMap = readonly {

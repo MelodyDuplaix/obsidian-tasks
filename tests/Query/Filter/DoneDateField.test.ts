@@ -1,6 +1,3 @@
-/**
- * @jest-environment jsdom
- */
 import moment from 'moment';
 import { DoneDateField } from '../../../src/Query/Filter/DoneDateField';
 import type { FilterOrErrorMessage } from '../../../src/Query/Filter/FilterOrErrorMessage';
@@ -38,12 +35,12 @@ describe('done date', () => {
 
 describe('explain done date queries', () => {
     beforeAll(() => {
-        jest.useFakeTimers();
-        jest.setSystemTime(new Date('2022-01-15'));
+        vi.useFakeTimers();
+        vi.setSystemTime(new Date('2022-01-15'));
     });
 
     afterAll(() => {
-        jest.useRealTimers();
+        vi.useRealTimers();
     });
 
     it('should explain date before', () => {

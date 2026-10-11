@@ -1,6 +1,3 @@
-/**
- * @jest-environment jsdom
- */
 import { getSettings, isFeatureEnabled, resetSettings, toggleFeature, updateSettings } from '../../src/Config/Settings';
 import { defaultPresets } from '../../src/Query/Presets/Presets';
 
@@ -84,6 +81,14 @@ describe('resetSettings behaviour', () => {
     it('should have taskCountLocation default to bottom', () => {
         const currentSettings = getSettings();
         expect(currentSettings.searchResults.taskCountLocation).toBe('bottom');
+    });
+
+    it('should enable fuzzy Quick Search by default and retain a loaded value', () => {
+        expect(getSettings().quickSearch.fuzzyMatching).toBe(true);
+
+        updateSettings({ quickSearch: { fuzzyMatching: false } });
+
+        expect(getSettings().quickSearch.fuzzyMatching).toBe(false);
     });
 
     it('should completely remove properties not in defaultSettings', () => {

@@ -1,6 +1,3 @@
-/**
- * @jest-environment jsdom
- */
 import moment from 'moment';
 import { StatusRegistry } from '../../src/Statuses/StatusRegistry';
 import { Status } from '../../src/Statuses/Status';
@@ -13,7 +10,6 @@ import * as StatusExamples from '../TestingTools/StatusExamples';
 import { constructStatuses } from '../TestingTools/StatusesTestHelpers';
 import { createTestTasksFile } from '../TestingTools/TasksFileHelpers';
 
-jest.mock('obsidian');
 window.moment = moment;
 
 describe('StatusRegistry', () => {

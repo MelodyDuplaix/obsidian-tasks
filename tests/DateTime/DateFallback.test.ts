@@ -1,6 +1,3 @@
-/**
- * @jest-environment jsdom
- */
 import type { Moment } from 'moment';
 import moment from 'moment';
 import { Task } from '../../src/Task/Task';
@@ -10,7 +7,6 @@ import { TaskLocation } from '../../src/Task/TaskLocation';
 import { TaskBuilder } from '../TestingTools/TaskBuilder';
 import { createTestTasksFile } from '../TestingTools/TasksFileHelpers';
 
-jest.mock('obsidian');
 window.moment = moment;
 
 function date(value: string | null): Moment | null {

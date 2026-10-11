@@ -1,79 +1,21 @@
-import { type App, Component, MarkdownRenderer, Notice, SuggestModal } from 'obsidian';
-import { TASK_FORMATS } from '../Config/Settings';
-import { TaskLayoutComponent } from '../Layout/TaskLayoutOptions';
-import type { Task } from '../Task/Task';
-import { getTaskLineAndFile } from '../Obsidian/File';
-import { GlobalFilter } from '../Config/GlobalFilter';
-import { GlobalQuery } from '../Config/GlobalQuery';
-import { SearchInfo } from '../Query/SearchInfo';
-import type { Filter } from '../Query/Filter/Filter';
-import { TasksFile } from '../Scripting/TasksFile';
-import { DescriptionField } from '../Query/Filter/DescriptionField';
-import { Sort } from '../Query/Sort/Sort';
+/**
+ * @fileoverview UI parts of the Quick Search command implementation.
+ * See also `src/Commands/QuickSearchTasks.ts`.
+ */
 
-export interface TaskSearchSuggestionText {
+import { type App, Component, MarkdownRenderer, Notice, SuggestModal, setIcon } from 'obsidian';
+import type { Task } from '../Task/Task';
+import { TASK_FORMATS, getSettings, updateSettings } from '../Config/Settings';
+import { TaskLayoutComponent } from '../Layout/TaskLayoutOptions';
+import { findTasksByDescription } from '../lib/QuickSearchTasks';
+import { GlobalFilter } from '../Config/GlobalFilter';
+import { getTaskLineAndFile } from '../Obsidian/File';
+import { QuickSearchOptionsModal } from './QuickSearchOptionsModal';
+
+interface TaskSearchSuggestionText {
     description: string;
     source: string;
     heading: string;
-}
-
-function getGlobalQueryFilters(): Filter[] {
-    // The placeholder presents mechanism results in an exception being thrown
-    // if we do not provide a location for the query source file,
-    // and the Global Query contains placeholder presets as {{preset.simple}}:
-    //     Invalid Global Query: The query looks like it contains a placeholder, with "{{" and "}}"
-    //     but no file path has been supplied, so cannot expand placeholder values.
-    //     The query is:
-    //     {{preset.simple}}
-    // So we create a fake location for the query source file:
-    const dummyTasksFile = new TasksFile('Dummy Path for Quick Search command.md');
-
-    const query = GlobalQuery.getInstance().query(dummyTasksFile);
-    if (query.error !== undefined) {
-        // Silently ignore invalid Global Query
-        return [];
-    }
-    return query.filters;
-}
-
-function applyFiltersToTask(globalQueryFilters: Filter[], task: Task, searchInfo: SearchInfo): boolean {
-    try {
-        return globalQueryFilters.every((filter) => filter.filterFunction(task, searchInfo));
-    } catch {
-        // Silently ignore search-time errors from Global Query - just include the task in the search results
-        return true;
-    }
-}
-
-export function filterIncompleteTasksByDescription(tasks: readonly Task[], query: string): Task[] {
-    if (query.trim() === '') {
-        return [];
-    }
-
-    const normalizedQuery = query.toLowerCase();
-
-    // Many users will have defined a Global Query in their Tasks settings,
-    // such as to tell Tasks to ignore tasks that are in their Template folder.
-    // So we want Quick Search to only return tasks that match the filters in the Global Query.
-    const globalQueryFilters = getGlobalQueryFilters();
-    const searchInfo = SearchInfo.fromAllTasks([...tasks]);
-
-    const results = tasks.filter((task) => {
-        return (
-            !task.isDone &&
-            task.descriptionWithoutTags.toLowerCase().includes(normalizedQuery) &&
-            applyFiltersToTask(globalQueryFilters, task, searchInfo)
-        );
-    });
-    return sortResults(results, searchInfo);
-}
-
-function sortResults(results: Task[], searchInfo: SearchInfo): Task[] {
-    // Sort the results by description, using same logic as the 'sort by description' instruction.
-    const sorter = new DescriptionField().createNormalSorter();
-    // And if the descriptions are identical, sort the tasks by the
-    // default Tasks order used in Tasks queries.
-    return Sort.by([sorter], results, searchInfo);
 }
 
 export function taskSearchSuggestionText(task: Task): TaskSearchSuggestionText {
@@ -117,17 +59,59 @@ export async function openTaskAtSourceLocation(task: Task, app: App): Promise<vo
     }
 }
 
+async function saveFuzzyMatchingSetting(
+    fuzzyMatching: boolean,
+    onSaveSettings: () => Promise<void>,
+    onChange: () => void,
+): Promise<void> {
+    updateSettings({ quickSearch: { fuzzyMatching } });
+    onChange();
+    await onSaveSettings();
+}
+
 export class QuickSearchTasksModal extends SuggestModal<Task> {
     private readonly renderComponents: Component[] = [];
 
-    constructor(app: App, private readonly getTasks: () => Task[]) {
+    constructor(
+        app: App,
+        private readonly getTasks: () => Task[],
+        private readonly onSaveSettings: () => Promise<void>,
+    ) {
         super(app);
         this.setPlaceholder('Search incomplete tasks');
         this.emptyStateText = 'Type to search incomplete tasks.';
     }
 
+    public onOpen(): void {
+        super.onOpen();
+        this.modalEl.addClass('tasks-quick-search-modal-container');
+
+        const inputContainer = this.inputEl.parentElement ?? this.modalEl;
+        const optionsButton = inputContainer.createEl('button', {
+            cls: [
+                'modal-close-button',
+                'mod-raised',
+                'clickable-icon',
+                'modal-option-button',
+                'tasks-quick-search-options-button',
+            ],
+            attr: { 'aria-label': 'Quick search options' },
+        });
+        setIcon(optionsButton, 'settings');
+        optionsButton.onclick = () => {
+            new QuickSearchOptionsModal({
+                app: this.app,
+                fuzzyMatching: getSettings().quickSearch.fuzzyMatching,
+                onChange: async (fuzzyMatching) =>
+                    await saveFuzzyMatchingSetting(fuzzyMatching, this.onSaveSettings, () =>
+                        this.inputEl.dispatchEvent(new Event('input', { bubbles: true })),
+                    ),
+            }).open();
+        };
+    }
+
     public getSuggestions(query: string): Task[] {
-        return filterIncompleteTasksByDescription(this.getTasks(), query);
+        return findTasksByDescription(this.getTasks(), query);
     }
 
     public renderSuggestion(task: Task, el: HTMLElement): void {

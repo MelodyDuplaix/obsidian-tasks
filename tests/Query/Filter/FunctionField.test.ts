@@ -1,6 +1,3 @@
-/**
- * @jest-environment jsdom
- */
 import moment from 'moment';
 
 import { FunctionField } from '../../../src/Query/Filter/FunctionField';
@@ -38,8 +35,8 @@ const tomorrowDate = new TasksDate(moment(tomorrow));
 const undated = new TasksDate(null);
 
 beforeEach(() => {
-    jest.useFakeTimers();
-    jest.setSystemTime(new Date(today));
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date(today));
 });
 
 // -----------------------------------------------------------------------------------------------------------------
@@ -479,7 +476,7 @@ The error message was:
 // -----------------------------------------------------------------------------------------------------------------
 
 afterEach(() => {
-    jest.useRealTimers();
+    vi.useRealTimers();
 });
 
 function createGrouper(line: string) {

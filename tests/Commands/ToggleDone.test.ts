@@ -1,7 +1,3 @@
-/**
- * @jest-environment jsdom
- */
-
 import moment from 'moment';
 import type { EditorPosition } from 'obsidian';
 import { getNewCursorPosition, toggleLine } from '../../src/Commands/ToggleDone';
@@ -78,12 +74,12 @@ function testToggleLineForOutOfRangeCursorPositions(
 
 describe('ToggleDone', () => {
     beforeEach(() => {
-        jest.useFakeTimers();
-        jest.setSystemTime(new Date('2022-09-04'));
+        vi.useFakeTimers();
+        vi.setSystemTime(new Date('2022-09-04'));
     });
 
     afterEach(() => {
-        jest.useRealTimers();
+        vi.useRealTimers();
         GlobalFilter.getInstance().reset();
     });
 

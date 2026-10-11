@@ -1,6 +1,3 @@
-/**
- * @jest-environment jsdom
- */
 import { type RenderResult, fireEvent, render, waitFor } from '@testing-library/svelte';
 import moment from 'moment';
 import { taskFromLine } from '../../src/Commands/CreateOrEditTaskParser';
@@ -352,12 +349,12 @@ describe('Task editing', () => {
     describe('Status editing', () => {
         const today = '2024-02-29';
         beforeAll(() => {
-            jest.useFakeTimers();
-            jest.setSystemTime(new Date(today));
+            vi.useFakeTimers();
+            vi.setSystemTime(new Date(today));
         });
 
         afterAll(() => {
-            jest.useRealTimers();
+            vi.useRealTimers();
         });
 
         afterEach(() => {
@@ -563,12 +560,12 @@ describe('Task editing', () => {
 
     describe('Date editing', () => {
         beforeEach(() => {
-            jest.useFakeTimers();
-            jest.setSystemTime(new Date('2024-11-27'));
+            vi.useFakeTimers();
+            vi.setSystemTime(new Date('2024-11-27'));
         });
 
         afterEach(() => {
-            jest.useRealTimers();
+            vi.useRealTimers();
         });
 
         const line = '- [ ] simple';
@@ -632,14 +629,14 @@ describe('Task editing', () => {
  */
 describe('Exhaustive editing', () => {
     beforeEach(() => {
-        jest.useFakeTimers();
-        jest.setSystemTime(new Date('2023-07-18'));
+        vi.useFakeTimers();
+        vi.setSystemTime(new Date('2023-07-18'));
     });
 
     afterEach(() => {
         GlobalFilter.getInstance().reset();
         resetSettings();
-        jest.useRealTimers();
+        vi.useRealTimers();
     });
 
     /**
@@ -700,7 +697,7 @@ describe('Exhaustive editing', () => {
     });
 });
 
-function verifyModalHTML() {
+async function verifyModalHTML() {
     // Populate task a valid and an invalid date. Note that the valid date value
     // is not visible in the HTML output.
     const task = taskFromLine({ line: '- [ ] absolutely to do 🛫 2024-01-01 ⏳ 2024-02-33', path: '' });
@@ -708,7 +705,7 @@ function verifyModalHTML() {
     const allTasks = [task];
     const { container } = renderAndCheckModal(task, onSubmit, allTasks);
 
-    const prettyHTML = prettifyHTML(container.innerHTML);
+    const prettyHTML = await prettifyHTML(container.innerHTML);
     verifyWithFileExtension(prettyHTML, 'html');
 }
 
@@ -717,14 +714,14 @@ describe('Edit Modal HTML snapshot tests', () => {
         resetSettings();
     });
 
-    it('should match snapshot', () => {
+    it('should match snapshot', async () => {
         updateSettings({ provideAccessKeys: true });
-        verifyModalHTML();
+        await verifyModalHTML();
     });
 
-    it('should match snapshot - without access keys', () => {
+    it('should match snapshot - without access keys', async () => {
         updateSettings({ provideAccessKeys: false });
-        verifyModalHTML();
+        await verifyModalHTML();
     });
 });
 

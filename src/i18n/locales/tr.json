@@ -1,4 +1,12 @@
 {
+  "common": {
+    "cancel": "İptal",
+    "edit": "Düzenle",
+    "moreInfo": "Daha fazla bilgi",
+    "okay": "Tamam",
+    "reload": "Yeniden yükle",
+    "save": "Kaydet"
+  },
   "main": {
     "loadingPlugin": "Eklenti yükleniyor: {{name}} v{{version}}",
     "unloadingPlugin": "Eklenti kaldırılıyor: {{name}} v{{version}}"
@@ -25,7 +33,25 @@
         "description": "Durumun arama ve geçişlerde nasıl davranacağını belirler.",
         "name": "Görev Durum Türü"
       },
-      "fixErrorsBeforeSaving": "Kaydetmeden önce hataları düzeltin."
+      "fixErrorsBeforeSaving": "Kaydetmeden önce hataları düzeltin.",
+      "title": {
+        "editCoreStatus": "Temel durumu düzenle",
+        "editCustomStatus": "Özel durumu düzenle"
+      }
+    },
+    "editPresetModal": {
+      "name": {
+        "duplicate": "Bu ada sahip bir ön ayar zaten var",
+        "name": "Ad",
+        "placeholder": "örn. açık görevler",
+        "required": "Gerekli"
+      },
+      "query": {
+        "description": "İsteğe bağlı. Bunu daha sonra doldurabilirsiniz.",
+        "name": "Sorgu",
+        "placeholder": "not done\npath includes Work"
+      },
+      "title": "Ön ayarı düzenle"
     }
   },
   "notices": {
@@ -184,7 +210,7 @@
           "line3": "Örneğin, genel filtreyi <code>#task</code> olarak ayarlarsanız, Tasks eklentisi yalnızca <code>#task</code> etiketiyle işaretlenmiş kontrol listesi öğelerini işler.",
           "line4": "Diğer kontrol listesi öğeleri normal kontrol listesi öğeleri olarak kalır ve sorgularda görünmez ya da tamamlanma tarihi almaz."
         },
-        "name": "Genel filtre",
+        "name": "Genel görev filtresi",
         "placeholder": "örn. #task veya TODO"
       },
       "heading": "Genel görev filtresi",
@@ -197,12 +223,17 @@
       "heading": "Genel Sorgu",
       "query": {
         "description": "Kasadaki her Tasks bloğunun başına otomatik olarak eklenen sorgu. Varsayılan filtreler veya düzen seçenekleri eklemek için kullanışlıdır.",
-        "placeholder": "Örneğin...\npath does not include _templates/\nlimit 300\nshow urgency"
+        "placeholder": "Örneğin...\npath does not include _templates/\nlimit 300\nshow urgency",
+        "shortDescription": "Her Tasks bloğunun başına otomatik olarak eklenen talimatlar."
       }
     },
     "presets": {
       "buttons": {
         "addNewPreset": "Yeni ön ayar ekle"
+      },
+      "emptyState": "Henüz ön ayar yok.",
+      "filter": {
+        "placeholder": "Ön ayarları filtrele…"
       },
       "line1": "Burada birden fazla sorguda yeniden kullanabileceğiniz adlandırılmış talimatlar tanımlayabilirsiniz. '{{name}}' adlı bir ön ayar, Tasks sorgularında '{{instruction1}}' veya '{{instruction2}}' ile kullanılabilir.",
       "line2": "Ön ayarlar düzenlendiğinde açık Tasks sorguları otomatik olarak yeniden yüklenir.",
@@ -235,6 +266,10 @@
     },
     "searches": {
       "enableCustomSearches": {
+        "confirm": {
+          "acknowledge": "Riskleri anlıyorum",
+          "enable": "Etkinleştir"
+        },
         "description": {
           "line1": "Tasks sorgularında JavaScript çalıştıran '{{filterByFunction}}', '{{sortByFunction}}' ve '{{groupByFunction}}' özelliklerini etkinleştirir.",
           "line2": "Bir Tasks sorgusunda veya Markdown dosyasında kötü amaçlı JavaScript, Obsidian içinde çalışarak kasa içeriklerinize, yerel dosyalarınıza veya diğer sistem kaynaklarına erişebilir ya da bunları değiştirebilir.",
@@ -247,6 +282,13 @@
     },
     "seeTheDocumentation": "Belgelere bakın",
     "statuses": {
+      "buttons": {
+        "addStatus": "Durum ekle",
+        "importFromTheme": {
+          "description": "Bir tema veya CSS parçacığının desteklediği durumları ekleyin.",
+          "name": "Temadan içe aktar"
+        }
+      },
       "collections": {
         "anuppuccinTheme": "AnuPpuccin Teması",
         "auraTheme": "Aura Teması",
@@ -254,6 +296,9 @@
         "buttons": {
           "addCollection": {
             "name": "{{themeName}}: {{numberOfStatuses}} desteklenen Durumu ekle"
+          },
+          "importCollection": {
+            "name": "{{themeName}} ({{numberOfStatuses}} durum)"
           }
         },
         "ebullientworksTheme": "Ebullientworks Teması",
@@ -278,12 +323,14 @@
       "customStatuses": {
         "buttons": {
           "addAllUnknown": {
+            "description": "Kasanızda bulunan ancak burada henüz yapılandırılmamış tüm durum sembollerini ekleyin.",
             "name": "Tüm Bilinmeyen Durum Türlerini Ekle"
           },
           "addNewStatus": {
             "name": "Yeni Görev Durumu Ekle"
           },
           "resetCustomStatuses": {
+            "description": "Tüm özel durumları silin ve varsayılanları geri yükleyin.",
             "name": "Özel Durum Türlerini Varsayılanlara Sıfırla"
           }
         },
@@ -293,9 +340,27 @@
           "line3": "<b>Not:</b> Daha önce yer alan durumlarla aynı simgeye sahip durumlar yok sayılır. Gerçekte yüklenen durumları 'Görev oluştur veya düzenle' komutunu çalıştırıp Durum açılır menüsüne bakarak doğrulayabilirsiniz.",
           "line4": "Başlamak için belgelere bakın!"
         },
+        "emptyState": "Henüz özel durum yok.",
         "heading": "Özel Durumlar"
       },
-      "heading": "Görev Durumları"
+      "filter": {
+        "placeholder": "Durumları filtrele…"
+      },
+      "heading": "Görev Durumları",
+      "reloadRequired": "Değişiklikler yeniden yüklemeden sonra geçerli olur.",
+      "types": {
+        "cancelled": "İptal edildi",
+        "done": "Tamamlandı",
+        "empty": "Boş",
+        "inProgress": "Devam ediyor",
+        "nonTask": "Görev değil",
+        "onHold": "Beklemede",
+        "todo": "Yapılacak"
+      },
+      "unnamed": "(adsız)"
+    },
+    "taskEntry": {
+      "heading": "Görev girişi"
     }
   }
 }

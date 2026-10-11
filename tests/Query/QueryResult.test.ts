@@ -1,6 +1,3 @@
-/**
- * @jest-environment jsdom
- */
 import moment from 'moment/moment';
 import { DescriptionField } from '../../src/Query/Filter/DescriptionField';
 import { TagsField } from '../../src/Query/Filter/TagsField';
@@ -267,7 +264,7 @@ group by id
 `);
     });
 
-    it.failing('should indent nested tasks', () => {
+    it.fails('should indent nested tasks', () => {
         const tasks = readTasksFromSimulatedFile(
             'inheritance_1parent2children2grandchildren1sibling_start_with_heading',
         );

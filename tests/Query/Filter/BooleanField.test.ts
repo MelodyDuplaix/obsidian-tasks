@@ -1,6 +1,3 @@
-/**
- * @jest-environment jsdom
- */
 import moment from 'moment';
 import { BooleanField } from '../../../src/Query/Filter/BooleanField';
 import type { FilterOrErrorMessage } from '../../../src/Query/Filter/FilterOrErrorMessage';
@@ -274,12 +271,12 @@ describe('boolean query - filter', () => {
 
 describe('boolean query - explain', () => {
     beforeAll(() => {
-        jest.useFakeTimers();
-        jest.setSystemTime(new Date('2024-04-07'));
+        vi.useFakeTimers();
+        vi.setSystemTime(new Date('2024-04-07'));
     });
 
     afterAll(() => {
-        jest.useRealTimers();
+        vi.useRealTimers();
     });
 
     function explainFilters(indentationLevel: number, source: string) {
@@ -351,12 +348,12 @@ describe('boolean query - explain', () => {
 
 describe('boolean query - exhaustive tests', () => {
     beforeAll(() => {
-        jest.useFakeTimers();
-        jest.setSystemTime(new Date('2024-03-28'));
+        vi.useFakeTimers();
+        vi.setSystemTime(new Date('2024-03-28'));
     });
 
     afterAll(() => {
-        jest.useRealTimers();
+        vi.useRealTimers();
     });
 
     it('preprocess - split line', () => {

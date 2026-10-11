@@ -1,7 +1,10 @@
-/**
- * @jest-environment jsdom
- */
-import type { HTMLElementWithCreateDiv, HTMLElementWithCreateEl, HTMLElementWithCreateSpan } from './DOMExtensions';
+import type { Mock } from 'vitest';
+import type {
+    DocumentWithCreateDiv,
+    HTMLElementWithCreateDiv,
+    HTMLElementWithCreateEl,
+    HTMLElementWithCreateSpan,
+} from './DOMExtensions';
 
 /**
  * Create a parent element typed for tests that exercise createEl().
@@ -60,7 +63,7 @@ function expectElementToHaveClasses(element: Element, expectedClasses: string[] 
     }
 }
 
-function expectCallbackToHaveBeenCalledOnceWith(callback: jest.Mock<any, any, any>, child: HTMLElement): void {
+function expectCallbackToHaveBeenCalledOnceWith(callback: Mock, child: HTMLElement): void {
     expect(callback).toHaveBeenCalledTimes(1);
     expect(callback).toHaveBeenCalledWith(child);
 }
@@ -80,7 +83,7 @@ describe('global createEl()', () => {
     });
 
     it('createEl() should call the callback with the created element', () => {
-        const callback = jest.fn();
+        const callback = vi.fn();
 
         const child = createEl('button', undefined, callback);
 
@@ -133,7 +136,7 @@ describe('HTMLElement.createEl()', () => {
     });
 
     it('createEl() should call the callback with the created element', () => {
-        const callback = jest.fn();
+        const callback = vi.fn();
 
         const child = parent.createEl('button', undefined, callback);
 
@@ -202,7 +205,7 @@ describe('global createDiv()', () => {
     });
 
     it('createDiv() should call the callback with the created div', () => {
-        const callback = jest.fn();
+        const callback = vi.fn();
 
         const div = createDiv(undefined, callback);
 
@@ -211,13 +214,40 @@ describe('global createDiv()', () => {
     });
 
     it('createDiv() should apply text before calling the callback', () => {
-        const callback = jest.fn();
+        const callback = vi.fn();
 
         const div = createDiv({ text: 'example text content' }, callback);
 
         expect(div.textContent).toBe('example text content');
         expectCallbackToHaveBeenCalledOnceWith(callback, div);
         expect((callback.mock.calls[0][0] as HTMLDivElement).textContent).toBe('example text content');
+    });
+});
+
+describe('Document.createDiv()', () => {
+    let doc: DocumentWithCreateDiv;
+
+    beforeEach(() => {
+        doc = document as DocumentWithCreateDiv;
+    });
+
+    it('createDiv() should create a div and return it without appending it', () => {
+        const div = doc.createDiv();
+
+        expect(div.tagName).toBe('DIV');
+        expect(div.parentElement).toBeNull();
+    });
+
+    it('createDiv() should apply options and callback', () => {
+        const callback = vi.fn();
+
+        const div = doc.createDiv({ cls: 'single-class-value', text: 'example text content' }, callback);
+
+        expect(div.tagName).toBe('DIV');
+        expect(div.parentElement).toBeNull();
+        expectElementToHaveClasses(div, 'single-class-value');
+        expect(div.textContent).toBe('example text content');
+        expectCallbackToHaveBeenCalledOnceWith(callback, div);
     });
 });
 
@@ -276,7 +306,7 @@ describe('HTMLElement.createDiv()', () => {
     });
 
     it('createDiv() should call the callback with the created div', () => {
-        const callback = jest.fn();
+        const callback = vi.fn();
 
         const div = parent.createDiv(undefined, callback);
 
@@ -300,7 +330,7 @@ describe('global createSpan()', () => {
     });
 
     it('createSpan() should call the callback with the created span', () => {
-        const callback = jest.fn();
+        const callback = vi.fn();
 
         const span = createSpan(undefined, callback);
 
@@ -338,7 +368,7 @@ describe('HTMLElement.createSpan()', () => {
     });
 
     it('createSpan() should call the callback with the created span', () => {
-        const callback = jest.fn();
+        const callback = vi.fn();
 
         const span = parent.createSpan(undefined, callback);
 
@@ -364,5 +394,37 @@ describe('HTMLElement.createSpan()', () => {
 
         expectCorrectTagNameAndParentChildStructure(parent, child, 'SPAN');
         expectDocumentFragmentToHaveBeenUsed(child);
+    });
+});
+
+describe('HTMLElement.empty()', () => {
+    it('removes all child nodes', () => {
+        const parent = document.createElement('div');
+        parent.appendChild(document.createElement('span'));
+        parent.appendChild(document.createTextNode('text'));
+        parent.appendChild(document.createElement('p'));
+
+        parent.empty();
+
+        expect(parent.childNodes).toHaveLength(0);
+    });
+});
+
+describe('HTMLElement.addClass()', () => {
+    it('addClass() should add one class', () => {
+        const element = document.createElement('div');
+
+        element.addClass('single-class-value');
+
+        expect(element.classList).toContain('single-class-value');
+    });
+
+    it('addClass() should add multiple classes', () => {
+        const element = document.createElement('div');
+
+        element.addClass('first-class', 'second-class');
+
+        expect(element.classList).toContain('first-class');
+        expect(element.classList).toContain('second-class');
     });
 });

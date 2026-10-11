@@ -93,6 +93,20 @@ globalThis.createDiv = function (
 
 /**
  * Provide the minimal Obsidian-style createDiv() behaviour in Jest
+ * for Document instances by delegating to createEl('div').
+ *
+ * Unlike HTMLElement.createDiv(), this does not append the new div anywhere.
+ */
+Document.prototype.createDiv = function (
+    this: Document,
+    o?: string | CreateDivOptions,
+    callback?: (el: HTMLDivElement) => void,
+): HTMLDivElement {
+    return createDiv(o, callback);
+};
+
+/**
+ * Provide the minimal Obsidian-style createDiv() behaviour in Jest
  * by delegating to createEl('div').
  *
  * This is a partial re-implementation of
@@ -148,8 +162,41 @@ HTMLElement.prototype.createSpan = function (
 };
 
 // ------------------------------------------------------------------
+// Mimic of Obsidian's empty() implementation
+// ------------------------------------------------------------------
+
+HTMLElement.prototype.empty = function (this: HTMLElement): void {
+    this.replaceChildren();
+};
+
+// ------------------------------------------------------------------
+// Mimic of Obsidian's addClass() implementation
+// ------------------------------------------------------------------
+
+HTMLElement.prototype.addClass = function (this: HTMLElement, ...classNames: string[]): void {
+    this.classList.add(...classNames);
+};
+
+// ------------------------------------------------------------------
 // Other global test code
 // ------------------------------------------------------------------
+
+// jsdom does not implement ResizeObserver, which Svelte 5 uses for bind:clientWidth.
+if (!globalThis.ResizeObserver) {
+    class ResizeObserverStub {
+        observe() {
+            // stub to silence SonarQube
+        }
+        unobserve() {
+            // stub to silence SonarQube
+        }
+        disconnect() {
+            // stub to silence SonarQube
+        }
+    }
+
+    globalThis.ResizeObserver = ResizeObserverStub;
+}
 
 // Tests should default to allowing JavaScript in Tasks queries.
 // Production code initialises this singleton separately in main.ts, using Obsidian local storage.

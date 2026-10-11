@@ -11,6 +11,9 @@
     "noUnusedParameters": true,
     "module": "ESNext",
     "target": "es6",
+    "verbatimModuleSyntax": true,
+    // Prefer declarations (.d) because approvals v7 publishes TypeScript sources alongside its compiled files.
+    "moduleSuffixes": [".d", ""],
     "allowJs": true,
     "noImplicitAny": true,
     "moduleResolution": "node",
@@ -26,7 +29,7 @@
       ]
     },
     "types": [
-      "jest",
+      "vitest/globals",
       "node",
       "svelte"
     ],
@@ -39,7 +42,9 @@
   },
   "include": [
     "src/**/*",
-    "tests/**/*"
+    "tests/**/*",
+    "vitest.config.ts",
+    "vitest.integration.config.ts"
   ],
   "exclude": [
     "node_modules/*"
