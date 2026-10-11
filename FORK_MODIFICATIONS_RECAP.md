@@ -99,6 +99,7 @@ Pour garantir que les futurs `git merge` avec le dépôt upstream `obsidian-task
 | **8.3.5 - 8.3.6** | Déclenchement de la release et ajustement de l'expression régulière du préfixe de date (`datePrefixRegex`). |
 | **8.3.7** | **Correctif Majeur de l'Éditeur** : Désambiguïsation du crochet `- [ ] ` du début de tâche, activation avec `due` et crochet simple `[`, évitant tout conflit avec le suggestor de liens natif d'Obsidian. |
 | **8.4.0** | **Synchronisation Upstream 8.4.0** : Intégration de la vue en colonnes (Cards/Columns View), drag-and-drop entre colonnes, préservation des retours à la ligne Markdown hard breaks, et compatibilité TS/Jest. |
+| **8.5.0** | **Synchronisation Upstream 8.5.0** : Intégration de la recherche floue (fuzzy search) dans Quick Search avec options de filtrage, intégration du format Daily Note dans les paramètres déclaratifs Obsidian 1.13 (`getSettingDefinitions`), migration vers Vitest & Svelte 5. |
 
 ---
 
